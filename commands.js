@@ -11,6 +11,12 @@ const commands = [
     .setName('ping')
     .setDescription('Replies with Pong!'),
 
+  new SlashCommandBuilder()
+    .setName('pong')
+    .setDescription('Replies with Ping!'),
+
+
+
   //Say 
   new SlashCommandBuilder()
     .setName('say')
@@ -31,6 +37,44 @@ const commands = [
       .setDescription('Url to embed')
       .setRequired(true)
     ),
+
+  // Wikipedia
+  new SlashCommandBuilder()
+    .setName('wikipedia')
+    .setDescription('Search a wikipedia')
+    .addStringOption(option => option
+      .setName('search')
+      .setDescription('Text to search')
+      .setRequired(true)
+    ),
+
+  // Random number generator
+  new SlashCommandBuilder()
+    .setName('rng')
+    .setDescription('Generate a random number')
+    .addStringOption(option => option
+      .setName('minimum')
+      .setDescription('Minimum number to generate')
+      .setRequired(true)
+    )
+    .addStringOption(option => option
+      .setName('maximum')
+      .setDescription('Maximum number to generate')
+      .setRequired(true)
+    ),
+
+  new SlashCommandBuilder()
+    .setName('quote')
+    .setDescription('Gives a random quote'),
+
+  new SlashCommandBuilder()
+  .setName('weather')
+  .setDescription('Search weather for a location')
+  .addStringOption(option => option
+    .setName('city')
+    .setDescription('name of the city')
+  )
+
 ];
 
 const rest = new REST({ version: '10' }).setToken(process.env.TOKEN); // Don't expose token
