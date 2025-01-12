@@ -14,7 +14,7 @@ client.on('guildMemberAdd', async (member) => {
   const channel = member.guild.channels.cache.get(WELCOME_AND_GOODBYE_CHANNEL_ID);
   if (!channel) return;
 
-  channel.send(`Welcome to the server, <@${member.id}>! 🎉 Make yourself at home.`);
+  channel.send(`Welcome to the server, <@${member.id}>! 🎉 Make yourself at home`);
 });
 
 // Trigger when a user leaves
