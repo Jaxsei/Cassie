@@ -49,6 +49,21 @@ client.on('messageCreate', message => {
   // Pong Ping!
   if (message.content.startsWith('?pong')) return message.reply({ content: "Ping!!" })
 
+  // Snippet Sharing
+  if (message.content.startsWith('!snippet')) {
+    const args = message.content.split(' ');
+    const language = args[1]; // First argument is the language
+    const code = args.slice(2).join(' '); // The rest is the code
+
+    if (!language || !code) {
+      return message.reply(
+        'Usage: `!snippet <language> <code>`\nExample: `!snippet javascript console.log("Hello, world!");`'
+      );
+    }
+
+    // Send the formatted code block
+    message.channel.send(`\`\`\`${language}\n${code}\n\`\`\``);
+  }
 
 });
 
