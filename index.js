@@ -160,50 +160,72 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
-
-  if (commandName === 'weather') {
+if (commandName === 'weather') {
     const city = options.getString('city');
 
     if (!city) {
-      return interaction.reply('Please provide a city name! 🌍');
+        return interaction.reply('🌍 **Please provide a city name!**');
     }
 
     try {
-      const cityName = encodeURIComponent(city.trim()); // Encode city name for URL
-      const weatherResponse = await fetch(`https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${WEATHER_API_KEY}&units=metric`);
-      const weatherData = await weatherResponse.json();
+        const cityName = encodeURIComponent(city.trim());
+        const weatherResponse = await fetch(
+            `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${WEATHER_API_KEY}&units=metric`
+        );
 
-      if (weatherData.cod !== 200) {
-        return interaction.reply('Sorry, I couldn\'t find weather information for that city. Please check the spelling or try with the country code (e.g., "London,GB"). 😕');
-      }
+        if (!weatherResponse.ok) {
+            return interaction.reply('⚠️ **Unable to fetch weather data. Try again later!**');
+        }
 
-      const temperature = weatherData.main.temp;
-      const weather = weatherData.weather[0].description;
-      const humidity = weatherData.main.humidity;
-      const windSpeed = weatherData.wind.speed;
+        const weatherData = await weatherResponse.json();
 
-      // Emojis to express the data
-      const temperatureEmoji = temperature > 25 ? '🔥' : temperature < 10 ? '❄️' : '🌡️';
-      const weatherEmoji = weather.includes('clear') ? '☀️' : weather.includes('cloud') ? '☁️' : weather.includes('rain') ? '🌧️' : '🌤️';
-      const windEmoji = windSpeed > 5 ? '💨' : '🌬️';
+        if (weatherData.cod !== 200) {
+            return interaction.reply(
+                '❌ **City not found!** Check spelling or try using a country code (e.g., `London,GB`).'
+            );
+        }
 
-      const weatherMessage = `
-       🌍 **Weather Update for ${city}:**  ${weatherEmoji}
+        // Extracting weather details
+        const { temp, feels_like, humidity } = weatherData.main;
+        const { speed: windSpeed } = weatherData.wind;
+        const visibility = weatherData.visibility / 1000; // Convert to km
+        const weatherDesc = weatherData.weather[0].description;
+        const weatherIcon = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`;
 
-       🌡️  **Temperature:** ${temperature}°C  ${temperatureEmoji}  
-       ☁️  **Weather:** ${weather}  🌦️  
-       💧  **Humidity:** ${humidity}%  💦  
-       🌬️  **Wind Speed:** ${windSpeed} m/s  ${windEmoji}
+        // Emoji conditions
+        const tempEmoji = temp > 30 ? '🔥' : temp < 10 ? '❄️' : '🌡️';
+        const windEmoji = windSpeed > 5 ? '💨' : '🍃';
+        const visibilityEmoji = visibility < 2 ? '🌫️' : '👀';
+        const weatherEmoji = weatherDesc.includes('clear')
+            ? '☀️'
+            : weatherDesc.includes('cloud')
+            ? '☁️'
+            : weatherDesc.includes('rain')
+            ? '🌧️'
+            : '🌤️';
 
-       Stay safe and take care! 💙
-`;
-      await interaction.reply(weatherMessage);
+        // **Advanced Markdown Message**
+        const weatherMessage = `
+        > 🏙️ **Weather Report for \`${city}\`** ${weatherEmoji}
+        > 
+        > 🔥 **Temperature:** \`${temp}°C\` ${tempEmoji} *(Feels like \`${feels_like}°C\`)*
+        > ☁️ **Condition:** \`${weatherDesc}\`
+        > 💧 **Humidity:** \`${humidity}%\` 💦
+        > 🌬️ **Wind Speed:** \`${windSpeed} m/s\` ${windEmoji}
+        > 👁️ **Visibility:** \`${visibility} km\` ${visibilityEmoji}
+        >
+        > ![Weather Icon](${weatherIcon})
+        > 
+        > 📝 ***Stay safe and dress accordingly!*** 💙
+        `;
+
+        await interaction.reply(weatherMessage);
     } catch (error) {
-      console.error('Error fetching weather:', error);
-      await interaction.reply('Sorry, something went wrong while fetching the weather. 😔');
+        console.error('❌ Error fetching weather:', error);
+        await interaction.reply('⚠️ **Something went wrong. Try again later!**');
     }
-  }
-
+}
+  
 });
 
 client.login(process.env.TOKEN)
