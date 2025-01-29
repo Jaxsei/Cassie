@@ -2,7 +2,7 @@
 
 Cassie is an interactive **Discord bot** inspired by the character **Cassie** from *Shadow Slave*. It provides **fun interactions, utility commands, and automation features**, making your server more engaging!  
 
-![Cassie Banner](https://imgur.com/a/mL65lNE.png) *(Replace with actual image URL)*  
+![Cassie Banner](https://i.imgur.com/afotcXi.jpeg)  
 
 ---
 
