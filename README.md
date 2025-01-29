@@ -1,11 +1,25 @@
+# 🌙 **Cassie - A Versatile Discord Bot**  
 
-# Cassie
+Cassie is an interactive **Discord bot** inspired by the character **Cassie** from *Shadow Slave*. It provides **fun interactions, utility commands, and automation features**, making your server more engaging!  
 
-Cassie is an character based from a webnovel called 'Shadow Slave'.
+![Cassie Banner](https://imgur.com/a/mL65lNE.png) *(Replace with actual image URL)*  
 
+---
 
-## Screenshots
-![App ScreenShot](https://github.com/user-attachments/assets/b153f5eb-2578-4395-8e60-4467679cd147)
+## ✨ **Features**  
 
-#### Its still development, i will be adding more features later..
+✔ **Interactive Chat** – Commands for fun responses like `ping`, `say`, and `snippet sharing`.  
+✔ **Wikipedia Search** – Quickly fetch summaries from Wikipedia.  
+✔ **Random Quote Generator** – Get motivational quotes from ZenQuotes API.  
+✔ **Weather Updates** – Check real-time weather for any city.  
+✔ **Welcome & Goodbye Messages** – Auto greets new members and says farewell.  
+✔ **Random Number Generator** – Generate a number between a given range.  
 
+---
+
+## 🛠️ **Installation & Setup**  
+
+### **1️⃣ Clone the Repository**  
+```bash
+git clone https://github.com/Jaxsei/Cassie.git
+cd Cassie
