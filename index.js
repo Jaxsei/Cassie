@@ -27,7 +27,7 @@ client.on('guildMemberRemove', async (member) => {
 
 
 // Message Commands
-client.on('messageCreate', message => {
+client.on('messageCreate', async message => {
   if (message.author.bot) return;
 
 
@@ -63,6 +63,24 @@ client.on('messageCreate', message => {
 
     // Send the formatted code block
     message.channel.send(`\`\`\`${language}\n${code}\n\`\`\``);
+  }
+
+
+  if (message.content.startsWith('!cat')) {
+    try {
+      const res = await fetch('https://api.thecatapi.com/v1/images/search');
+      const data = await res.json();
+      const imageUrl = data[0]?.url;
+
+      if (imageUrl) {
+        message.reply(imageUrl);
+      } else {
+        message.reply('**Error finding cat image**');
+      }
+    } catch (error) {
+      console.error('Error fetching cats:', error);
+      message.reply('**Error fetching cat images**');
+    }
   }
 
 });
@@ -160,52 +178,52 @@ client.on('interactionCreate', async interaction => {
     }
   }
 
-if (commandName === 'weather') {
+  if (commandName === 'weather') {
     const city = options.getString('city');
 
     if (!city) {
-        return interaction.reply('🌍 **Please provide a city name!**');
+      return interaction.reply('🌍 **Please provide a city name!**');
     }
 
     try {
-        const cityName = encodeURIComponent(city.trim());
-        const weatherResponse = await fetch(
-            `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${WEATHER_API_KEY}&units=metric`
+      const cityName = encodeURIComponent(city.trim());
+      const weatherResponse = await fetch(
+        `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${WEATHER_API_KEY}&units=metric`
+      );
+
+      if (!weatherResponse.ok) {
+        return interaction.reply('⚠️ **Unable to fetch weather data. Try again later!**');
+      }
+
+      const weatherData = await weatherResponse.json();
+
+      if (weatherData.cod !== 200) {
+        return interaction.reply(
+          '❌ **City not found!** Check spelling or try using a country code (e.g., `London,GB`).'
         );
+      }
 
-        if (!weatherResponse.ok) {
-            return interaction.reply('⚠️ **Unable to fetch weather data. Try again later!**');
-        }
+      // Extracting weather details
+      const { temp, feels_like, humidity } = weatherData.main;
+      const { speed: windSpeed } = weatherData.wind;
+      const visibility = weatherData.visibility / 1000; // Convert to km
+      const weatherDesc = weatherData.weather[0].description;
+      const weatherIcon = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`;
 
-        const weatherData = await weatherResponse.json();
-
-        if (weatherData.cod !== 200) {
-            return interaction.reply(
-                '❌ **City not found!** Check spelling or try using a country code (e.g., `London,GB`).'
-            );
-        }
-
-        // Extracting weather details
-        const { temp, feels_like, humidity } = weatherData.main;
-        const { speed: windSpeed } = weatherData.wind;
-        const visibility = weatherData.visibility / 1000; // Convert to km
-        const weatherDesc = weatherData.weather[0].description;
-        const weatherIcon = `https://openweathermap.org/img/wn/${weatherData.weather[0].icon}.png`;
-
-        // Emoji conditions
-        const tempEmoji = temp > 30 ? '🔥' : temp < 10 ? '❄️' : '🌡️';
-        const windEmoji = windSpeed > 5 ? '💨' : '🍃';
-        const visibilityEmoji = visibility < 2 ? '🌫️' : '👀';
-        const weatherEmoji = weatherDesc.includes('clear')
-            ? '☀️'
-            : weatherDesc.includes('cloud')
-            ? '☁️'
-            : weatherDesc.includes('rain')
+      // Emoji conditions
+      const tempEmoji = temp > 30 ? '🔥' : temp < 10 ? '❄️' : '🌡️';
+      const windEmoji = windSpeed > 5 ? '💨' : '🍃';
+      const visibilityEmoji = visibility < 2 ? '🌫️' : '👀';
+      const weatherEmoji = weatherDesc.includes('clear')
+        ? '☀️'
+        : weatherDesc.includes('cloud')
+          ? '☁️'
+          : weatherDesc.includes('rain')
             ? '🌧️'
             : '🌤️';
 
-        // **Advanced Markdown Message**
-        const weatherMessage = `
+      // **Advanced Markdown Message**
+      const weatherMessage = `
         > 🏙️ **Weather Report for \`${city}\`** ${weatherEmoji}
         > 
         > 🔥 **Temperature:** \`${temp}°C\` ${tempEmoji} *(Feels like \`${feels_like}°C\`)*
@@ -219,13 +237,30 @@ if (commandName === 'weather') {
         > 📝 ***Stay safe and dress accordingly!*** 💙
         `;
 
-        await interaction.reply(weatherMessage);
+      await interaction.reply(weatherMessage);
     } catch (error) {
-        console.error('❌ Error fetching weather:', error);
-        await interaction.reply('⚠️ **Something went wrong. Try again later!**');
+      console.error('❌ Error fetching weather:', error);
+      await interaction.reply('⚠️ **Something went wrong. Try again later!**');
     }
-}
-  
+
+    if (commandName === "cat") {
+
+      const API_URL = `https://api.thecatapi.com/v1/images/search`;
+
+      try {
+        const res = await fetch(API_URL);
+        const data = res.json();
+
+        await interaction.reply(data.url)
+
+      } catch (error) {
+        console.error('Error fetching cats:', error);
+        await interaction.reply('**Error fetching cat images**');
+      }
+
+    }
+  }
+
 });
 
 client.login(process.env.TOKEN)
